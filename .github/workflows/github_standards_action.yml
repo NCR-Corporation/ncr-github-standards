@@ -1,0 +1,50 @@
+# This workflow collects the profiles of all Github users in a specific organization, then filters users to only those missing profile data.
+# Then, users who are missing data will be sent an automated email 1x/day to remind them to update their profiles.
+  # Missing data includes: lack of name, lack of public email
+
+name: Github Standards Action
+
+# Workflow currently runs once a year, on January 1st, please change to your desired schedule.
+on: 
+  schedule:
+		- cron: '1 0 1 1 *'
+    
+jobs:
+  github_standards:
+    name: Github Standards Workflow Action
+    runs-on: ${{ matrix.os }}
+    strategy: 
+      matrix:
+        go-version: [1.15.x]
+        os: [ubuntu-latest]
+        
+    steps:
+    # 1. Install Go
+    - uses: actions/checkout@v2
+    - name: Install Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go-version }}
+      # TESTING: check to see that go was properly installed
+    - run: go version 
+  
+    # 2. Build Step
+    - name: Build
+      working-directory: ./src
+      run: go build 
+     
+    # 3. Get GCloud Authentication
+    - name: Get GCloud Authentication
+      id: secrets
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
+      
+    # 4. Run Step
+    - name: Run
+      working-directory: ./src
+      # uncomment the following line to run the program on a schedule
+      # run: go build -o a; ./a
+      
