@@ -7,7 +7,7 @@ name: Github Standards Action
 # Workflow currently runs once a year, on January 1st, please change to your desired schedule.
 on: 
   schedule:
-		- cron: '1 0 1 1 *'
+  	- cron: '1 0 1 1 *'
     
 jobs:
   github_standards:
